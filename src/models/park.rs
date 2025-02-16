@@ -1,4 +1,8 @@
-use diesel::prelude::*;
+use crate::schema::parks;
+use diesel::prelude::Queryable;
+use diesel::prelude::Selectable;
+use diesel::prelude::Insertable;
+use diesel::prelude::AsChangeset;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 

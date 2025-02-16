@@ -2,7 +2,7 @@
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TABLE parks (
+CREATE TABLE IF NOT EXISTS parks (
     park_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     park_name VARCHAR(64) NOT NULL,
     address VARCHAR(166) NOT NULL,

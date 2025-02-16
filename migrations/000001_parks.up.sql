@@ -1,7 +1,7 @@
--- Your SQL goes here
-
+-- Enable pgcrypto extension for UUID generation
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+-- Create parks table
 CREATE TABLE IF NOT EXISTS parks (
     park_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     park_name VARCHAR(64) NOT NULL,

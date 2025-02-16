@@ -1,5 +1,3 @@
--- Your SQL goes here
-
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS spots (

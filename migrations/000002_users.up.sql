@@ -1,5 +1,3 @@
--- Your SQL goes here
-
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS users (
@@ -7,6 +5,5 @@ CREATE TABLE IF NOT EXISTS users (
     full_name VARCHAR(128) NOT NULL,
     email VARCHAR(128) UNIQUE NOT NULL,
     password_hash VARCHAR(256) NOT NULL,
-    phone VARCHAR(20) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
+    phone VARCHAR(20) UNIQUE NOT NULL
 );

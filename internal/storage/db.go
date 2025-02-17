@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/Masterminds/squirrel"
 	_ "github.com/lib/pq"
 	"github.com/ruziba3vich/parking_searcher/pkg/config"
 )
@@ -23,4 +24,36 @@ func ConnectDB(cfg *config.Config) (*sql.DB, error) {
 
 	log.Println("Database connected successfully!")
 	return db, nil
+}
+
+func NewStorage[T any](db *sql.DB) any {
+	switch any(new(T)).(type) {
+	case *CardStorage:
+		return *&CardStorage{
+			db: db,
+			qb: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Question),
+		}
+	case *HistoryStorage:
+		return &HistoryStorage{
+			db: db,
+			qb: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Question),
+		}
+	case *ParkStorage:
+		return &ParkStorage{
+			db: db,
+			qb: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Question),
+		}
+	case *SpotStorage:
+		return &SpotStorage{
+			db: db,
+			qb: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Question),
+		}
+	case *UserStorage:
+		return &UserStorage{
+			db: db,
+			qb: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Question),
+		}
+	default:
+		return *new(T)
+	}
 }

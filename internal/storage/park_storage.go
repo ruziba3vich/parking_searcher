@@ -24,8 +24,30 @@ func NewParkStorage(db *sql.DB) *ParkStorage {
 // Create a new park
 func (s *ParkStorage) CreatePark(ctx context.Context, park models.Park) error {
 	query, args, err := s.qb.Insert("parks").
-		Columns("id", "name", "location", "capacity", "is_deleted").
-		Values(park.ParkID, park.ParkName, park.Address, park.TotalSpotsCount, false).
+		Columns(
+			"park_name",
+			"park_name",
+			"address",
+			"price_ph",
+			"status",
+			"available_spots_count",
+			"total_spots_count",
+			"electro_charging_available",
+			"latitude",
+			"longitude",
+			"is_deleted").
+		Values(
+			park.ParkID,
+			park.ParkName,
+			park.Address,
+			park.PricePerHour,
+			park.Status,
+			park.AvailableSpotsCount,
+			park.TotalSpotsCount,
+			park.ElectroChargingAvailable,
+			park.Longitude,
+			park.Latitude,
+			park.TotalSpotsCount, false).
 		ToSql()
 	if err != nil {
 		return err
@@ -35,11 +57,25 @@ func (s *ParkStorage) CreatePark(ctx context.Context, park models.Park) error {
 	return err
 }
 
-// Get all parks (excluding deleted)
-func (s *ParkStorage) GetAllParks(ctx context.Context) ([]models.Park, error) {
-	query, args, err := s.qb.Select("id", "name", "location", "capacity").
+// GetAllParks retrieves all parks (excluding deleted) with pagination.
+func (s *ParkStorage) GetAllParks(ctx context.Context, limit, offset int) ([]models.Park, error) {
+	query, args, err := s.qb.Select(
+		"park_id",
+		"park_name",
+		"address",
+		"price_ph",
+		"status",
+		"available_spots_count",
+		"total_spots_count",
+		"electro_charging_available",
+		"rating",
+		"latitude",
+		"longitude",
+	).
 		From("parks").
 		Where(sq.Eq{"is_deleted": false}).
+		Limit(uint64(limit)).
+		Offset(uint64(offset)).
 		ToSql()
 	if err != nil {
 		return nil, err
@@ -54,7 +90,19 @@ func (s *ParkStorage) GetAllParks(ctx context.Context) ([]models.Park, error) {
 	var parks []models.Park
 	for rows.Next() {
 		var park models.Park
-		if err := rows.Scan(&park.ParkID, &park.ParkName, &park.Address, &park.TotalSpotsCount); err != nil {
+		if err := rows.Scan(
+			&park.ParkID,
+			&park.ParkName,
+			&park.Address,
+			&park.PricePerHour,
+			&park.Status,
+			&park.AvailableSpotsCount,
+			&park.TotalSpotsCount,
+			&park.ElectroChargingAvailable,
+			&park.Rating,
+			&park.Latitude,
+			&park.Longitude,
+		); err != nil {
 			return nil, err
 		}
 		parks = append(parks, park)
@@ -65,7 +113,19 @@ func (s *ParkStorage) GetAllParks(ctx context.Context) ([]models.Park, error) {
 
 // Find park by ID (excluding deleted)
 func (s *ParkStorage) GetParkByID(ctx context.Context, id string) (*models.Park, error) {
-	query, args, err := s.qb.Select("id", "name", "location", "capacity").
+	query, args, err := s.qb.Select(
+		"park_id",
+		"park_name",
+		"address",
+		"price_ph",
+		"status",
+		"available_spots_count",
+		"total_spots_count",
+		"electro_charging_available",
+		"rating",
+		"latitude",
+		"longitude",
+	).
 		From("parks").
 		Where(sq.Eq{"id": id, "is_deleted": false}).
 		ToSql()
@@ -74,7 +134,19 @@ func (s *ParkStorage) GetParkByID(ctx context.Context, id string) (*models.Park,
 	}
 
 	var park models.Park
-	err = s.db.QueryRowContext(ctx, query, args...).Scan(&park.ParkID, &park.ParkName, &park.Address, &park.TotalSpotsCount)
+	err = s.db.QueryRowContext(ctx, query, args...).Scan(
+		&park.ParkID,
+		&park.ParkName,
+		&park.Address,
+		&park.PricePerHour,
+		&park.Status,
+		&park.AvailableSpotsCount,
+		&park.TotalSpotsCount,
+		&park.ElectroChargingAvailable,
+		&park.Rating,
+		&park.Latitude,
+		&park.Longitude,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -111,18 +183,17 @@ func (s *ParkStorage) DeletePark(ctx context.Context, id string) error {
 }
 
 /*
-	type Park struct {
-		ParkID                   uuid.UUID `json:"park_id"`
-		ParkName                 string    `json:"park_name"`
-		Address                  string    `json:"address"`
-		PricePerHour             float64   `json:"price_ph"`
-		Status                   string    `json:"status"`
-		AvailableSpotsCount      int       `json:"available_spots_count"`
-		TotalSpotsCount          int       `json:"total_spots_count"`
-		ElectroChargingAvailable bool      `json:"electro_charging_available"`
-		Rating                   float64   `json:"rating"`
-		ParkBalance              float64   `json:"park_balance"`
-		Latitude                 float64   `json:"latitude"`
-		Longitude                float64   `json:"longitude"`
-	}
+	park_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    park_name VARCHAR(64) NOT NULL,
+    address VARCHAR(166) NOT NULL,
+    price_ph DOUBLE PRECISION NOT NULL,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('available', 'full', 'closed')),
+    available_spots_count INT NOT NULL,
+    total_spots_count INT NOT NULL,
+    electro_charging_available BOOLEAN NOT NULL DEFAULT FALSE,
+    rating DOUBLE PRECISION DEFAULT 0,
+    park_balance DOUBLE PRECISION DEFAULT 0,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE
 */

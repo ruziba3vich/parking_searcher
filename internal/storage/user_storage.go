@@ -85,7 +85,7 @@ func (s *UserStorage) GetUserById(ctx context.Context, userID string) (*models.U
 	// Use squirrel to build the select query
 	query, args, err := s.qb.Select("user_id", "email", "full_name", "phone").
 		From("users").
-		Where(sq.Eq{"user_id": userID}).
+		Where(sq.Eq{"user_id": userID, "is_deleted": false}).
 		ToSql()
 	if err != nil {
 		return nil, err

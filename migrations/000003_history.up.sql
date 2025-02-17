@@ -8,5 +8,6 @@ CREATE TABLE IF NOT EXISTS history (
     entry_time TIMESTAMP NOT NULL DEFAULT NOW(),
     exit_time TIMESTAMP,
     total_cost DOUBLE PRECISION DEFAULT 0,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('active', 'completed', 'canceled'))
+    rate DOUBLE PRECISION DEFAULT 5,
+    comment TEXT
 );

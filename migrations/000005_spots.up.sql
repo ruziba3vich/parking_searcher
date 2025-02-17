@@ -5,5 +5,6 @@ CREATE TABLE IF NOT EXISTS spots (
     park_id UUID NOT NULL,
     spot_number INT NOT NULL,
     is_open BOOLEAN,
-    is_electro_charging BOOLEAN NOT NULL DEFAULT FALSE
+    is_electro_charging BOOLEAN NOT NULL DEFAULT FALSE,
+    is_deleted BOOLEAN DEFAULT FALSE
 );

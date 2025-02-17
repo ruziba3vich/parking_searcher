@@ -9,5 +9,6 @@ CREATE TABLE IF NOT EXISTS history (
     exit_time TIMESTAMP,
     total_cost DOUBLE PRECISION DEFAULT 0,
     rate DOUBLE PRECISION DEFAULT 5,
-    comment TEXT
+    comment TEXT,
+    is_deleted BOOLEAN DEFAULT FALSE
 );
